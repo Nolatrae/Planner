@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { hash } from 'argon2'
 import { AuthDto } from 'src/auth/dto/auth.dto'
 import { PrismaService } from 'src/prisma.service'
-import { UserDto } from './dto/user.dto'
+import { UserDto } from './user.dto'
 
 import { startOfDay, subDays } from 'date-fns'
 
@@ -60,6 +60,19 @@ export class UserService {
 				}
 			}
 		})
+
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { password, ...rest } = profile
+
+		return {
+			user: rest,
+			statistics: [
+				{ label: 'Total ', value: totalTasks },
+				{ label: 'Completed tasks ', value: completedTasks },
+				{ label: 'Today tasks ', value: todayTasks },
+				{ label: 'Week tasks ', value: weekTasks }
+			]
+		}
 	}
 
 	async create(dto: AuthDto) {
@@ -84,7 +97,11 @@ export class UserService {
 			where: {
 				id
 			},
-			data
+			data,
+			select: {
+				name: true,
+				email: true
+			}
 		})
 	}
 }
