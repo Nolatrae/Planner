@@ -12,25 +12,32 @@ import {
 } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
-import { TaskDto } from './pomodoro.dto'
-import { TaskService } from './pomodoro.service'
+import { PomodoroRoundDto, PomodoroSessionDto } from './pomodoro.dto'
+import { PomodoroService } from './pomodoro.service'
 
-@Controller('user/tasks')
-export class TaskController {
-	constructor(private readonly taskService: TaskService) {}
+@Controller('user/timer')
+export class PomodoroController {
+	constructor(private readonly pomodoroService: PomodoroService) {}
 
-	@Get()
+	@Get('today')
 	@Auth()
-	async getAll(@CurrentUser('id') userId: string) {
-		return this.taskService.getAll(userId)
+	async getTodaySession(@CurrentUser('id') userId: string) {
+		return this.pomodoroService.getTodaySession(userId)
+	}
+
+	@HttpCode(200)
+	@Post()
+	@Auth()
+	async create(@CurrentUser('id') userId: string) {
+		return this.pomodoroService.create(userId)
 	}
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	@Post()
+	@Put('/round/:id')
 	@Auth()
-	async create(@Body() dto: TaskDto, @CurrentUser('id') userId: string) {
-		return this.taskService.create(dto, userId)
+	async updateRound(@Param('id') id: string, @Body() dto: PomodoroRoundDto) {
+		return this.pomodoroService.updateRound(dto, id)
 	}
 
 	@UsePipes(new ValidationPipe())
@@ -38,17 +45,17 @@ export class TaskController {
 	@Put(':id')
 	@Auth()
 	async update(
-		@Body() dto: TaskDto,
+		@Body() dto: PomodoroSessionDto,
 		@CurrentUser('id') userId: string,
 		@Param('id') id: string
 	) {
-		return this.taskService.update(dto, id, userId)
+		return this.pomodoroService.update(dto, id, userId)
 	}
 
 	@HttpCode(200)
 	@Delete(':id')
 	@Auth()
-	async delete(@Param('id') id: string) {
-		return this.taskService.delete(id)
+	async delete(@Param('id') id: string, @CurrentUser('id') userId: string) {
+		return this.pomodoroService.deleteSession(id, userId)
 	}
 }

@@ -12,14 +12,14 @@ export class PomodoroService {
 		return this.prisma.pomodoroSession.findFirst({
 			where: {
 				createdAt: {
-					gte: new Date(today),
+					gte: new Date(today)
 				},
 				userId
 			},
 			include: {
 				rounds: {
 					orderBy: {
-						id: 'desc'
+						id: 'asc'
 					}
 				}
 			}
@@ -40,13 +40,13 @@ export class PomodoroService {
 			}
 		})
 
-		if (!user) throw new NotFoundException("User not found")
+		if (!user) throw new NotFoundException('User not found')
 
 		return this.prisma.pomodoroSession.create({
 			data: {
 				rounds: {
 					createMany: {
-						data: Array.from({ length: user.intervalsCount}, () => ({
+						data: Array.from({ length: user.intervalsCount }, () => ({
 							totalSeconds: 0
 						}))
 					}
@@ -63,7 +63,11 @@ export class PomodoroService {
 		})
 	}
 
-	async update(dto: Partial<PomodoroSessionDto>, pomodoroId: string, userId: string) {
+	async update(
+		dto: Partial<PomodoroSessionDto>,
+		pomodoroId: string,
+		userId: string
+	) {
 		return this.prisma.pomodoroSession.update({
 			where: {
 				userId,
@@ -90,3 +94,4 @@ export class PomodoroService {
 			}
 		})
 	}
+}

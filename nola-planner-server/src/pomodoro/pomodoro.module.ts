@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
-import { TaskController } from './pomodoro.controller'
-import { TaskService } from './pomodoro.service'
+import { PomodoroController } from './pomodoro.controller'
+import { PomodoroService } from './pomodoro.service'
 
 @Module({
-	controllers: [TaskController],
-	providers: [TaskService, PrismaService],
-	exports: [TaskService]
+	controllers: [PomodoroController],
+	providers: [PomodoroService, PrismaService],
+	exports: [PomodoroService]
 })
-export class TaskModule {}
+export class PomodoroModule {}
